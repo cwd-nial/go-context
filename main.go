@@ -12,27 +12,43 @@ const apiCallExecutionTime = time.Second * 4
 func main() {
 	fmt.Println("Setup: API call takes " + apiCallExecutionTime.String() + " to execute")
 
+	// context with default timeout
 	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
 	defer cancel()
 	fmt.Println("\n...executing API call with default timeout (" + defaultTimeout.String() + ") context...")
-	fmt.Println(execute(ctx))
+	start := time.Now()
+	result := execute(ctx)
+	elapsed := time.Since(start)
+	fmt.Println(result + "\ntook " + elapsed.String())
 
+	// detached context (without a timeout value)
 	ctx, cancel = context.WithTimeout(context.Background(), defaultTimeout)
 	defer cancel()
 	fmt.Println("\n...executing API call with default timeout (" + defaultTimeout.String() + ") but detached context...")
-	fmt.Println(executeWithDetachedContext(ctx))
+	start = time.Now()
+	result = executeWithDetachedContext(ctx)
+	elapsed = time.Since(start)
+	fmt.Println(result + "\ntook " + elapsed.String())
 
+	// detached context with extended but insufficient timeout value
 	ctx, cancel = context.WithTimeout(context.Background(), defaultTimeout)
 	defer cancel()
 	extendedTimeout := time.Second * 3
 	fmt.Println("\n...executing API call with extended timeout (" + extendedTimeout.String() + ") and detached context...")
-	fmt.Println(executeWithDetachedAndExtendedContext(ctx, extendedTimeout))
+	start = time.Now()
+	result = executeWithDetachedAndExtendedContext(ctx, extendedTimeout)
+	elapsed = time.Since(start)
+	fmt.Println(result + "\ntook " + elapsed.String())
 
+	// detached context with extended big enough timeout value
 	ctx, cancel = context.WithTimeout(context.Background(), defaultTimeout)
 	defer cancel()
 	extendedTimeout = time.Second * 5
 	fmt.Println("\n...executing API call with extended timeout (" + extendedTimeout.String() + ") and detached context...")
-	fmt.Println(executeWithDetachedAndExtendedContext(ctx, extendedTimeout))
+	start = time.Now()
+	result = executeWithDetachedAndExtendedContext(ctx, extendedTimeout)
+	elapsed = time.Since(start)
+	fmt.Println(result + "\ntook " + elapsed.String())
 }
 
 func execute(ctx context.Context) string {
